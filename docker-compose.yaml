@@ -13,10 +13,8 @@ services:
             - "8080:8080"
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
-            # - "./etc/proxy/traefik.yaml:/etc/traefik/traefik.yaml"
-        # depends_on:
-        #     - web-server
-        command: --api.insecure=true --providers.docker
+            - "./etc/proxy/traefik.yaml:/etc/traefik/traefik.yaml"
+        # command: --api.insecure=true --providers.docker
         labels:
             - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_proxy.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy`, `${COMPOSE_PROJECT_NAME}-proxy.docker.localhost`, `${COMPOSE_PROJECT_NAME}.localhost`)"
         networks:

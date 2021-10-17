@@ -1,7 +1,7 @@
 ---
 # Docker configuration backend
 providers:
-    docker: {}
+    docker:
         # defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`, `hipster.localhost`)"
         defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
 
@@ -11,6 +11,10 @@ api:
 
 # http:
 #   routers:
+#     my-router:
+#       rule: "Path(`/foo`)"
+#       service: proxy-text
+
 #     # proxy:
 #     #   rule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
 
