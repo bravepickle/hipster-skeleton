@@ -1,1 +1,24 @@
-docker-compose.yaml
+---
+version: "3.9"
+services:
+    web-server:
+        build:
+            context: ./var
+            dockerfile: Dockerfile-alternate
+            args:
+                buildno: 1
+
+    proxy-test:
+        image: traefik/whoami
+        hostname: hip-proxy-test
+        container_name: "${COMPOSE_PROJECT_NAME}_proxy_test"
+        depends_on:
+            - proxy
+        networks:
+            hip_net:
+                ipv4_address: 172.16.200.200
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "3"

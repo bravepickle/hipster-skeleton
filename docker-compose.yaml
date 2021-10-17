@@ -1,1 +1,100 @@
-docker-compose.yaml
+---
+version: "3.9"
+services:
+    proxy:
+        image: traefik:2.5
+        hostname: hip-proxy
+        container_name: "${COMPOSE_PROJECT_NAME}_proxy"
+        extra_hosts:
+            - "master.dev:${MASTER_HOST}"
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "./etc/proxy/traefik.yaml:/etc/traefik/traefik.yaml"
+        depends_on:
+            - web-server
+        networks:
+            hip_net:
+                ipv4_address: 172.16.200.100
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "3"
+
+    web-server:
+        image: nginx:1-alpine
+        hostname: hip-web-server
+        container_name: "${COMPOSE_PROJECT_NAME}_web-server"
+        extra_hosts:
+            - "master.dev:${MASTER_HOST}"
+        ports:
+            - "8888:80"
+        volumes:
+            - "./data:${DATA_DIR}"
+        depends_on:
+            - php
+        networks:
+            hip_net:
+                ipv4_address: 172.16.200.110
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "3"
+
+    php:
+        image: php:7.4-fpm-alpine
+        hostname: hip-php
+        container_name: "${COMPOSE_PROJECT_NAME}_php"
+        extra_hosts:
+            - "master.dev:${MASTER_HOST}"
+        volumes:
+            - "./data:${DATA_DIR}"
+        depends_on:
+            - db
+            - redis
+        networks:
+            hip_net:
+                ipv4_address: 172.16.200.120
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "3"
+
+    db:
+        image: percona:5.7
+        hostname: hip-db
+        container_name: "${COMPOSE_PROJECT_NAME}_db"
+        networks:
+            hip_net:
+                ipv4_address: 172.16.200.130
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "3"
+
+    redis:
+        image: redis:6-alpine
+        hostname: hip-redis
+        container_name: "${COMPOSE_PROJECT_NAME}_redis"
+        networks:
+            hip_net:
+                ipv4_address: 172.16.200.140
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "3"
+
+networks:
+    hip_net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                -   subnet: 172.16.200.0/24

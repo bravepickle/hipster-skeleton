@@ -4,3 +4,5 @@
 .idea
 *.log
 /docker-compose.override.yaml
+/Vagrantfile
+/.vagrant
