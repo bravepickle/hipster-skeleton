@@ -1,9 +1,29 @@
 ---
 # Docker configuration backend
 providers:
-    docker:
-        defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`)"
+    docker: {}
+        # defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`, `hipster.localhost`)"
+        defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
 
 # API and dashboard configuration
 api:
     insecure: true
+
+# http:
+#   routers:
+#     # proxy:
+#     #   rule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
+
+#     proxy-test:
+#       rule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
+#       service: proxy-test
+#         # - proxy
+#         # - proxy-test
+
+
+# services:
+#     # Define how to reach an existing service on our infrastructure
+#     proxy-test:
+#       loadBalancer:
+#         servers:
+#             - url: http://proxy-test-hip.docker.localhost

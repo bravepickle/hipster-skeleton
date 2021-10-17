@@ -2,23 +2,28 @@
 version: "3.9"
 services:
     proxy:
-        image: traefik:2.5
-        hostname: hip-proxy
+        image: traefik:v2.5
+        hostname: "${COMPOSE_PROJECT_NAME}-proxy"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy"
         extra_hosts:
             - "master.dev:${MASTER_HOST}"
         ports:
             - "80:80"
-            - "443:443"
+            # - "443:443"
             - "8080:8080"
         volumes:
-            - "/var/run/docker.sock:/var/run/docker.sock"
-            - "./etc/proxy/traefik.yaml:/etc/traefik/traefik.yaml"
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+            # - "./etc/proxy/traefik.yaml:/etc/traefik/traefik.yaml"
         # depends_on:
         #     - web-server
+        command: --api.insecure=true --providers.docker
+        labels:
+            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_proxy.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy`, `${COMPOSE_PROJECT_NAME}-proxy.docker.localhost`, `${COMPOSE_PROJECT_NAME}.localhost`)"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.100
+                aliases:
+                    - "${COMPOSE_PROJECT_NAME}.localhost"
         logging:
             driver: "json-file"
             options:
@@ -27,7 +32,7 @@ services:
 
     web-server:
         image: nginx:1-alpine
-        hostname: hip-web-server
+        hostname: "${COMPOSE_PROJECT_NAME}-web-server"
         container_name: "${COMPOSE_PROJECT_NAME}_web-server"
         extra_hosts:
             - "master.dev:${MASTER_HOST}"
@@ -48,7 +53,7 @@ services:
 
     php:
         image: php:7.4-fpm-alpine
-        hostname: hip-php
+        hostname: "${COMPOSE_PROJECT_NAME}-php"
         container_name: "${COMPOSE_PROJECT_NAME}_php"
         extra_hosts:
             - "master.dev:${MASTER_HOST}"
@@ -68,7 +73,7 @@ services:
 
     db:
         image: percona:5.7
-        hostname: hip-db
+        hostname: "${COMPOSE_PROJECT_NAME}-db"
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         networks:
             hip_net:
@@ -81,7 +86,7 @@ services:
 
     redis:
         image: redis:6-alpine
-        hostname: hip-redis
+        hostname: "${COMPOSE_PROJECT_NAME}-redis"
         container_name: "${COMPOSE_PROJECT_NAME}_redis"
         networks:
             hip_net:
@@ -94,7 +99,7 @@ services:
 
     proxy-test:
         image: traefik/whoami
-        hostname: hip-proxy-test
+        hostname: "${COMPOSE_PROJECT_NAME}-proxy-test"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy_test"
         depends_on:
             - proxy
