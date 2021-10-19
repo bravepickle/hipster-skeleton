@@ -1,10 +1,15 @@
 ---
 # Docker configuration backend
+# see https://doc.traefik.io/traefik/providers/docker/ for options
 providers:
     docker:
         # defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`, `hipster.localhost`)"
+
+        # if enabled container for Traefik and rule not specified then this one will be used
         defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
 
+        # by default
+        exposedByDefault: false
 # API and dashboard configuration
 api:
     insecure: true

@@ -6,7 +6,7 @@ services:
         hostname: "${COMPOSE_PROJECT_NAME}-proxy"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy"
         extra_hosts:
-            - "master.dev:${MASTER_HOST}"
+            - "host.dev:${HOST_IP}"
         ports:
             - "80:80"
             # - "443:443"
@@ -14,14 +14,15 @@ services:
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
             - "./etc/proxy/traefik.yaml:/etc/traefik/traefik.yaml"
-        # command: --api.insecure=true --providers.docker
         labels:
-            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}_proxy.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy`, `${COMPOSE_PROJECT_NAME}-proxy.docker.localhost`, `${COMPOSE_PROJECT_NAME}.localhost`)"
+            - "traefik.enable=true"
+            # - "traefik.http.routers.proxy.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy`, `${COMPOSE_PROJECT_NAME}-proxy.docker.localhost`, `${APP_HOST}`, `localhost`)"
+            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-proxy.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy`, `${COMPOSE_PROJECT_NAME}-proxy.docker.localhost`, `${APP_HOST}`, `localhost`)"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.100
                 aliases:
-                    - "${COMPOSE_PROJECT_NAME}.localhost"
+                    - "${APP_HOST}"
         logging:
             driver: "json-file"
             options:
@@ -33,11 +34,13 @@ services:
         hostname: "${COMPOSE_PROJECT_NAME}-web-server"
         container_name: "${COMPOSE_PROJECT_NAME}_web-server"
         extra_hosts:
-            - "master.dev:${MASTER_HOST}"
+            - "host.dev:${HOST_IP}"
         ports:
             - "8888:80"
         volumes:
             - "./data:${DATA_DIR}"
+        labels:
+            - "traefik.enable=true" # make container visible for Traefik upstreaming
         depends_on:
             - php
         networks:
@@ -54,7 +57,7 @@ services:
         hostname: "${COMPOSE_PROJECT_NAME}-php"
         container_name: "${COMPOSE_PROJECT_NAME}_php"
         extra_hosts:
-            - "master.dev:${MASTER_HOST}"
+            - "host.dev:${HOST_IP}"
         volumes:
             - "./data:${DATA_DIR}"
         depends_on:
@@ -73,6 +76,11 @@ services:
         image: percona:5.7
         hostname: "${COMPOSE_PROJECT_NAME}-db"
         container_name: "${COMPOSE_PROJECT_NAME}_db"
+        environment:
+            MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS}"
+            MYSQL_DATABASE: "${DB_NAME}"
+            MYSQL_USER: "${DB_USER}"
+            MYSQL_PASSWORD: "${DB_PASS}"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.130
@@ -101,6 +109,9 @@ services:
         container_name: "${COMPOSE_PROJECT_NAME}_proxy_test"
         depends_on:
             - proxy
+        labels:
+            - "traefik.enable=true"
+            # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-proxy-test.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy-test`, `${COMPOSE_PROJECT_NAME}-proxy-test.docker.localhost`)"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.200
