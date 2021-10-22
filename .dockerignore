@@ -2,3 +2,5 @@
 .git
 .cache
 .idea
+/var
+/host

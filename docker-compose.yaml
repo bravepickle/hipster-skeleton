@@ -3,6 +3,7 @@ version: "3.9"
 services:
     proxy:
         image: traefik:v2.5
+        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-proxy"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy"
         extra_hosts:
@@ -31,6 +32,7 @@ services:
 
     web-server:
         image: nginx:1-alpine
+        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-web-server"
         container_name: "${COMPOSE_PROJECT_NAME}_web-server"
         extra_hosts:
@@ -53,7 +55,13 @@ services:
                 max-file: "3"
 
     php:
-        image: php:7.4-fpm-alpine
+        image: bravepickle/php:7.4-fpm-alpine-dev
+        # platform: $OS_PLATFORM
+        build:
+          context: ./etc/php
+          # dockerfile: /Dockerfile
+          args:
+            DATA_DIR: "${DATA_DIR}"
         hostname: "${COMPOSE_PROJECT_NAME}-php"
         container_name: "${COMPOSE_PROJECT_NAME}_php"
         extra_hosts:
@@ -74,6 +82,7 @@ services:
 
     db:
         image: percona:5.7
+        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-db"
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         environment:
@@ -92,6 +101,7 @@ services:
 
     redis:
         image: redis:6-alpine
+        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-redis"
         container_name: "${COMPOSE_PROJECT_NAME}_redis"
         networks:
@@ -105,6 +115,7 @@ services:
 
     proxy-test:
         image: traefik/whoami
+        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-proxy-test"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy_test"
         depends_on:
