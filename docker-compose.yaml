@@ -55,7 +55,6 @@ services:
 
     php:
         image: bravepickle/php:7.4-fpm-alpine-dev
-        # platform: $OS_PLATFORM
         build:
             context: ./etc/php
             args:
@@ -80,7 +79,6 @@ services:
 
     php8:
         image: bravepickle/php:8-fpm-alpine-dev
-        # platform: $OS_PLATFORM
         build:
             context: ./etc/php
             dockerfile: Dockerfile-php8
@@ -106,7 +104,6 @@ services:
 
     db:
         image: percona:5.7
-        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-db"
         container_name: "${COMPOSE_PROJECT_NAME}_db"
         environment:
@@ -125,7 +122,6 @@ services:
 
     redis:
         image: redis:6-alpine
-        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-redis"
         container_name: "${COMPOSE_PROJECT_NAME}_redis"
         networks:
@@ -139,7 +135,6 @@ services:
 
     proxy-test:
         image: traefik/whoami
-        # platform: $OS_PLATFORM
         hostname: "${COMPOSE_PROJECT_NAME}-proxy-test"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy_test"
         depends_on:

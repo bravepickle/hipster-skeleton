@@ -68,11 +68,18 @@ Current project's file structure is as follows
     1. Ubuntu Linux distros: `apt-get install openssl`
 1. Run command on host machine `bin/make_self_signed_cert.sh`
 
+## Scripts
+There are some shell scripts with useful utilities in folder `bin`. For development purposes only!
+
+* `make_self_signed_cert.sh` - make self-signed SSL certificate and private key and put it to `var/ssl-certs` folder
+
+
 ## Useful info
 * Local [Traefik web UI dashboard](http://localhost:8080/dashboard/), if enabled by api.insecure flag in config
 * [WhoAmI sandbox](proxy-test-hip.docker.localhost)
 * See currently used [Traefik config](http://localhost:8080/api/rawdata) in raw format
 * To customize to your needs Docker Compose config setup to your specific local environment use `docker-compose.override.yaml` file. It won't be added to GIT
 * See usage `host.docker.internal` and `gateway.docker.internal` hosts usage within Docker containers, e.g. https://docs.docker.com/desktop/mac/networking/. If you need to access to host machine from within container in developer's environment then it may help. Be aware that in production mode it can be disabled!
+* Build custom images for multiple platform using [Buildx](https://docs.docker.com/buildx/working-with-buildx/)
 * [Self-signed SSL certificates docs](https://devcenter.heroku.com/articles/ssl-certificate-self)
 
