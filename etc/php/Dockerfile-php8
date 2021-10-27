@@ -1,0 +1,16 @@
+FROM php:8-fpm-alpine
+
+ARG DATA_DIR
+
+ENV DATA_DIR $DATA_DIR
+
+WORKDIR $DATA_DIR
+
+RUN apk add --no-cache jpeg-dev libpng-dev zlib-dev libwebp-dev freetype-dev libzip-dev autoconf make gcc zip \
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install -j$(nproc) gd pdo_mysql bcmath opcache zip \
+    # && pecl install redis-5.3.4 \
+    # && pecl install xdebug-2.8.1 \
+    # && docker-php-ext-enable redis xdebug \
+    # && apk cache clean

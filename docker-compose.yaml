@@ -57,10 +57,9 @@ services:
         image: bravepickle/php:7.4-fpm-alpine-dev
         # platform: $OS_PLATFORM
         build:
-          context: ./etc/php
-          # dockerfile: /Dockerfile
-          args:
-            DATA_DIR: "${DATA_DIR}"
+            context: ./etc/php
+            args:
+                DATA_DIR: "${DATA_DIR}"
         hostname: "${COMPOSE_PROJECT_NAME}-php"
         container_name: "${COMPOSE_PROJECT_NAME}_php"
         extra_hosts:
@@ -73,6 +72,32 @@ services:
         networks:
             hip_net:
                 ipv4_address: 172.16.200.120
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "3"
+
+    php8:
+        image: bravepickle/php:8-fpm-alpine-dev
+        # platform: $OS_PLATFORM
+        build:
+            context: ./etc/php
+            dockerfile: Dockerfile-php8
+            args:
+                DATA_DIR: "${DATA_DIR}"
+        hostname: "${COMPOSE_PROJECT_NAME}-php8"
+        container_name: "${COMPOSE_PROJECT_NAME}_php8"
+        extra_hosts:
+            - "host.dev:${HOST_IP}"
+        volumes:
+            - "./data:${DATA_DIR}"
+        depends_on:
+            - db
+            - redis
+        networks:
+            hip_net:
+                ipv4_address: 172.16.200.121
         logging:
             driver: "json-file"
             options:
