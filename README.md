@@ -80,6 +80,9 @@ There are some shell scripts with useful utilities in folder `bin`. For developm
 * See currently used [Traefik config](http://localhost:8080/api/rawdata) in raw format
 * To customize to your needs Docker Compose config setup to your specific local environment use `docker-compose.override.yaml` file. It won't be added to GIT
 * See usage `host.docker.internal` and `gateway.docker.internal` hosts usage within Docker containers, e.g. https://docs.docker.com/desktop/mac/networking/. If you need to access to host machine from within container in developer's environment then it may help. Be aware that in production mode it can be disabled!
-* Build custom images for multiple platform using [Buildx](https://docs.docker.com/buildx/working-with-buildx/)
+* Build custom images for multiple platform using [Buildx](https://docs.docker.com/buildx/working-with-buildx/). Read also [multi-platform usage](https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md) instructions (consider using [docker-container](https://github.com/docker/buildx/blob/master/docs/reference/buildx_create.md#driver) driver instead of default `docker` one)
 * [Self-signed SSL certificates docs](https://devcenter.heroku.com/articles/ssl-certificate-self)
 
+
+## TODO
+- [ ] figure out why docker hub allows only one architecture specified per tag and fix it
