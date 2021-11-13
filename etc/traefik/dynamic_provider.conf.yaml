@@ -27,16 +27,30 @@ http:
         # https-redirect:
         #   redirectScheme:
         #     scheme: https
-        # default-headers:
-        #   headers:
-        #     frameDeny: true
-        #     sslRedirect: true
-        #     browserXssFilter: true
-        #     contentTypeNosniff: true
-        #     forceSTSHeader: true
-        #     stsIncludeSubdomains: true
-        #     stsPreload: true
-        #     stsSeconds: 15552000
-        #     customFrameOptionsValue: SAMEORIGIN
-        #     customRequestHeaders:
-        #       X-Forwarded-Proto: https
+        default-headers:
+            headers:
+                frameDeny: true
+                sslRedirect: true
+                browserXssFilter: true
+                contentTypeNosniff: true
+                forceSTSHeader: true
+                stsIncludeSubdomains: true
+                stsPreload: true
+                stsSeconds: 15552000
+                customFrameOptionsValue: SAMEORIGIN
+                customResponseHeaders:
+                    X-Boo: dolor
+                customRequestHeaders:
+                    # X-Forwarded-Proto: https
+                    X-App: lorem
+                    X-Neo: ipsum
+                accessControlAllowMethods: "GET,OPTIONS,PUT,DELETE,POST"
+                accessControlAllowOriginList: "https://hipster.localhost,https://hipster.docker.localhost,https://localhost"
+                accessControlMaxAge: 100
+                addVaryHeader: true
+                isDevelopment: true
+                allowedHosts:
+                    - hipster.localhost
+                    - hipster.docker.localhost
+                    - localhost
+
