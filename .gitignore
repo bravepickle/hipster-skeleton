@@ -6,4 +6,4 @@
 /docker-compose.override.yaml
 /Vagrantfile
 /.vagrant
-!/data/web
+!/data/html
