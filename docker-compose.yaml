@@ -7,6 +7,7 @@ services:
         image: traefik:v2.5
         hostname: "${COMPOSE_PROJECT_NAME}-proxy"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy"
+        restart: unless-stopped
         extra_hosts:
             - "host.dev:${HOST_IP}"
             - "host.docker.internal:172.16.200.1" # ensure that this hostname will be available for all containers. Should point to host server
@@ -49,6 +50,7 @@ services:
         image: nginx:1-alpine
         hostname: "${COMPOSE_PROJECT_NAME}-web-server"
         container_name: "${COMPOSE_PROJECT_NAME}_web-server"
+        restart: unless-stopped
         extra_hosts:
             - "host.dev:${HOST_IP}"
             - "host.docker.internal:172.16.200.1"
@@ -65,6 +67,8 @@ services:
             - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-web-server.stripprefix.prefixes=/web"
             # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.scheme=https"
             # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.permanent=true"
+        environment:
+            DATA_DIR: "${DATA_DIR}"
         depends_on:
             - php
         networks:
@@ -80,6 +84,7 @@ services:
         image: bravepickle/php:7.4-fpm-alpine-dev
         hostname: "${COMPOSE_PROJECT_NAME}-php"
         container_name: "${COMPOSE_PROJECT_NAME}_php"
+        restart: unless-stopped
         extra_hosts:
             - "host.dev:${HOST_IP}"
             - "host.docker.internal:172.16.200.1"
@@ -88,6 +93,8 @@ services:
         depends_on:
             - db
             - redis
+        environment:
+            DATA_DIR: "${DATA_DIR}"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.120
@@ -101,6 +108,7 @@ services:
         image: bravepickle/php:8-fpm-alpine-dev
         hostname: "${COMPOSE_PROJECT_NAME}-php8"
         container_name: "${COMPOSE_PROJECT_NAME}_php8"
+        restart: unless-stopped
         extra_hosts:
             - "host.dev:${HOST_IP}"
             - "host.docker.internal:172.16.200.1"
@@ -109,6 +117,8 @@ services:
         depends_on:
             - db
             - redis
+        environment:
+            DATA_DIR: "${DATA_DIR}"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.121
@@ -122,6 +132,7 @@ services:
         image: percona:5.7
         hostname: "${COMPOSE_PROJECT_NAME}-db"
         container_name: "${COMPOSE_PROJECT_NAME}_db"
+        restart: unless-stopped
         environment:
             MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS}"
             MYSQL_DATABASE: "${DB_NAME}"
@@ -130,6 +141,8 @@ services:
         networks:
             hip_net:
                 ipv4_address: 172.16.200.130
+        volumes:
+            - db-data:/var/lib/mysql
         logging:
             driver: "json-file"
             options:
@@ -140,6 +153,7 @@ services:
         image: redis:6-alpine
         hostname: "${COMPOSE_PROJECT_NAME}-redis"
         container_name: "${COMPOSE_PROJECT_NAME}_redis"
+        restart: unless-stopped
         networks:
             hip_net:
                 ipv4_address: 172.16.200.140
@@ -153,6 +167,7 @@ services:
         image: traefik/whoami
         hostname: "${COMPOSE_PROJECT_NAME}-whoami"
         container_name: "${COMPOSE_PROJECT_NAME}_whoami"
+        restart: unless-stopped
         extra_hosts:
             - "host.docker.internal:172.16.200.1"
         depends_on:
@@ -161,8 +176,12 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-whoami.rule=PathPrefix(`/whoami`)"
             - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-whoami.entryPoints=web,webSecured"
-            - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.headers.customResponseHeaders.X-Out=test"
-            - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.stripprefix.prefixes=/whoami"
+            - "traefik.http.middlewares.foo-add-prefix.addprefix.prefix=/foo"
+            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.addprefix.prefix=/foo"
+            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.headers.customResponseHeaders.X-Out=test"
+            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.stripprefix.prefixes=/whoami"
+            # - "traefik.http.middlewares.whoami=app-prefix@file"
+            - "traefik.http.routers.whoami.middlewares=app-prefix@file"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.200
@@ -171,6 +190,10 @@ services:
             options:
                 max-size: "200k"
                 max-file: "3"
+
+volumes:
+    db-data: ~
+
 
 networks:
     hip_net:

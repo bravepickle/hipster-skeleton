@@ -19,11 +19,11 @@ tls:
 
 # TODO: add middlewares here and then set labels
 
-# http:
-#     middlewares:
-#         app-prefix:
-#             addPrefix:
-#                 prefix: "/admin"
+http:
+    middlewares:
+        app-prefix:
+            addPrefix:
+                prefix: "/admin"
         # https-redirect:
         #   redirectScheme:
         #     scheme: https

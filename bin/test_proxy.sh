@@ -36,6 +36,11 @@ curl -i localhost:80/whoami/test
 echo ""
 
 echo ""
-echo "==============  Test if routing to web server works. Expecting to return 200 status code with headers info..."
+echo "==============  Test if routing to web server + PHP works. Expecting to return 200 status code with headers info..."
 curl -i localhost:80/server.php
+echo ""
+
+echo ""
+echo "==============  Test if routing to web server + PHP8 works. Expecting to return 200 status code with headers info..."
+curl -i localhost:80/server.php8
 echo ""
