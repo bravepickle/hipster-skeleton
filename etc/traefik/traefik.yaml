@@ -1,0 +1,54 @@
+---
+# Docker configuration backend
+# see https://doc.traefik.io/traefik/providers/docker/ for options
+providers:
+    docker: # use Docker provider
+        # defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`, `hipster.localhost`)"
+
+        # if enabled container for Traefik and rule not specified then this one will be used
+        defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
+
+        # by default
+        exposedByDefault: false
+
+        # SSL setup
+        # tls:
+        #     ca: /etc/ssl/certs/server.crt
+        #     key: /etc/ssl/private/server.key
+        #     insecureSkipVerify: true # for development mode only!
+
+
+# API and dashboard configuration
+api:
+    insecure: true
+
+# Configure available entry points and ports
+entryPoints:
+    web:
+        address: ':80'
+        http: # redirect all HTTP requests to HTTPS
+            redirections:
+                entryPoint:
+                to: webSecured
+                scheme: https
+                permanent: false
+
+            # middlewares: []
+
+    webSecured:
+        address: ':443'
+
+    # make possible to externally connect to MySQL through proxy without opening port and make load balancing, monitoring possible
+    mysql:
+        address: ':3306'
+
+
+    # when 80 and 443 ports are busy or not allowed
+    other:
+        address: ':8888'
+
+# see https://doc.traefik.io/traefik/routing/overview/#transport-configuration
+# serversTransport:
+#     #insecureSkipVerify: true
+#     rootCAs:
+#         - /etc/ssl/certs/server.crt

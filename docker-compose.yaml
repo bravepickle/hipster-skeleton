@@ -1,4 +1,6 @@
 ---
+# See https://doc.traefik.io/traefik/
+# See https://docs.docker.com/compose/compose-file/compose-file-v3/
 version: "3.9"
 services:
     proxy:
@@ -7,20 +9,47 @@ services:
         container_name: "${COMPOSE_PROJECT_NAME}_proxy"
         extra_hosts:
             - "host.dev:${HOST_IP}"
+            - "host.docker.internal:172.16.200.1" # ensure that this hostname will be available for all containers. Should point to host server
         ports:
-            - "80:80"
-            - "443:443"
-            - "8080:8080"
+            - "80:80" # Default HTTP port
+            - "443:443" # Default HTTPS port
+            - "8080:8080" # The web UI
+            - "8888:8888" # Port-backup for the HTTP
+            - "3306:3306" # MySQL proxying
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
-            - "./etc/proxy/traefik.yaml:/etc/traefik/traefik.yaml:ro"
+            - "./etc/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
             - "./var/ssl-certs/${APP_HOST}.crt:/etc/ssl/certs/server.crt:ro"
             - "./var/ssl-certs/${APP_HOST}.key:/etc/ssl/private/server.key:ro"
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-proxy.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy`, `${COMPOSE_PROJECT_NAME}-proxy.docker.localhost`, `${APP_HOST}`, `localhost`)"
+            # - "traefik.http.middlewares.proxy-header.headers.customrequestheaders.X-Via=${COMPOSE_PROJECT_NAME}-proxy"
+            - "traefik.http.middlewares.proxy-header.headers.customRequestHeaders.X-Via=${COMPOSE_PROJECT_NAME}-proxy"
+            - "traefik.http.middlewares.proxy-header.headers.framedeny=true"
+            - "traefik.http.middlewares.proxy-header.headers.browserxssfilter=true"
+            - "traefik.http.middlewares.proxy-compress.compress=true"
+            # - "traefik.http.middlewares.proxy-stripprefix.stripprefix.prefixes=/foobar,/fiibar"
+            # - "traefik.http.middlewares.proxy-limit.ratelimit.average=100"
+            # - "traefik.http.middlewares.proxy-limit.ratelimit.burst=50"
             # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-proxy.tls={}"
             # - "traefik.http.services.${COMPOSE_PROJECT_NAME}-proxy.loadbalancer.server.port=443" # use when HTTPS is configured
+            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-errorpage.errors.status=500-599"
+            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-errorpage.errors.service=serviceError"
+            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-errorpage.errors.query=/{status}.html"
+            # CORS headers
+            - "traefik.http.middlewares.testheader.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,DELETE,POST"
+            - "traefik.http.middlewares.testheader.headers.accessControlAllowOriginList=https://${APP_HOST},https://localhost"
+            - "traefik.http.middlewares.testheader.headers.accesscontrolmaxage=100"
+            - "traefik.http.middlewares.testheader.headers.addvaryheader=true"
+            - "traefik.http.middlewares.testheader.headers.accessControlAllowCredentials=true"
+
+            # tls:
+            #   certificates:
+            #     - certFile: /path/to/domain.cert
+            #       keyFile: /path/to/domain.key
+            #     - certFile: /path/to/other-domain.cert
+            #       keyFile: /path/to/other-domain.key
         networks:
             hip_net:
                 ipv4_address: 172.16.200.100
@@ -38,8 +67,9 @@ services:
         container_name: "${COMPOSE_PROJECT_NAME}_web-server"
         extra_hosts:
             - "host.dev:${HOST_IP}"
-        ports:
-            - "8888:80"
+            - "host.docker.internal:172.16.200.1"
+        # ports:
+        #     - "8888:80"
         volumes:
             - "./data:${DATA_DIR}"
             - "./etc/nginx/nginx.conf:/etc/nginx/nginx.conf"
@@ -48,6 +78,8 @@ services:
             - "traefik.enable=true" # make container visible for Traefik upstreaming
             # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-web-server.rule=PathPrefix(`/web`)"
             - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-web-server.rule=Host(`hipster-web-server`)"
+            # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.scheme=https"
+            # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.permanent=true"
         depends_on:
             - php
         networks:
@@ -61,14 +93,11 @@ services:
 
     php:
         image: bravepickle/php:7.4-fpm-alpine-dev
-        # build:
-        #     context: ./etc/php
-        #     args:
-        #         DATA_DIR: "${DATA_DIR}"
         hostname: "${COMPOSE_PROJECT_NAME}-php"
         container_name: "${COMPOSE_PROJECT_NAME}_php"
         extra_hosts:
             - "host.dev:${HOST_IP}"
+            - "host.docker.internal:172.16.200.1"
         volumes:
             - "./data:${DATA_DIR}"
         depends_on:
@@ -85,15 +114,11 @@ services:
 
     php8:
         image: bravepickle/php:8-fpm-alpine-dev
-        # build:
-        #     context: ./etc/php
-        #     dockerfile: Dockerfile-php8
-        #     args:
-        #         DATA_DIR: "${DATA_DIR}"
         hostname: "${COMPOSE_PROJECT_NAME}-php8"
         container_name: "${COMPOSE_PROJECT_NAME}_php8"
         extra_hosts:
             - "host.dev:${HOST_IP}"
+            - "host.docker.internal:172.16.200.1"
         volumes:
             - "./data:${DATA_DIR}"
         depends_on:
@@ -143,6 +168,8 @@ services:
         image: traefik/whoami
         hostname: "${COMPOSE_PROJECT_NAME}-proxy-test"
         container_name: "${COMPOSE_PROJECT_NAME}_proxy_test"
+        extra_hosts:
+            - "host.docker.internal:172.16.200.1"
         depends_on:
             - proxy
         labels:
