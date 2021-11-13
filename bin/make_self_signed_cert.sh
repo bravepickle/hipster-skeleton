@@ -3,6 +3,8 @@
 # See references
 #   * https://doc.traefik.io/traefik/user-guides/grpc/#with-https
 #   * https://www.openssl.org/docs/man1.0.2/man1/openssl-req.html
+#   * https://www.digicert.com/kb/ssl-support/openssl-quick-reference-guide.htm
+#   * https://devcenter.heroku.com/articles/ssl-certificate-self
 
 set -e
 

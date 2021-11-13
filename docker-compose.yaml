@@ -14,8 +14,8 @@ services:
             - "80:80" # Default HTTP port
             - "443:443" # Default HTTPS port
             - "8080:8080" # The web UI
-            - "8888:8888" # Port-backup for the HTTP
-            - "3306:3306" # MySQL proxying
+            # - "8888:8888" # TODO: Port-backup for the HTTP
+            # - "3306:3306" # TODO: MySQL proxying
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
             - "./etc/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
@@ -24,40 +24,15 @@ services:
             - "./var/ssl-certs/${APP_HOST}.key:/etc/ssl/private/server.key:ro"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-proxy.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy`, `${COMPOSE_PROJECT_NAME}-proxy.docker.localhost`, `${APP_HOST}`, `localhost`)"
-            # - "traefik.http.middlewares.proxy-header.headers.customrequestheaders.X-Via=${COMPOSE_PROJECT_NAME}-proxy"
             - "traefik.http.middlewares.proxy-header.headers.customRequestHeaders.X-Via=${COMPOSE_PROJECT_NAME}-proxy"
-            - "traefik.http.middlewares.proxy-header.headers.framedeny=true"
-            - "traefik.http.middlewares.proxy-header.headers.browserxssfilter=true"
-            - "traefik.http.middlewares.proxy-compress.compress=true"
-            # - "traefik.http.middlewares.proxy-stripprefix.stripprefix.prefixes=/foobar,/fiibar"
-            # - "traefik.http.middlewares.proxy-limit.ratelimit.average=100"
-            # - "traefik.http.middlewares.proxy-limit.ratelimit.burst=50"
-            # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-proxy.tls={}"
-            # - "traefik.http.services.${COMPOSE_PROJECT_NAME}-proxy.loadbalancer.server.port=443" # use when HTTPS is configured
-            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-errorpage.errors.status=500-599"
-            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-errorpage.errors.service=serviceError"
-            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-errorpage.errors.query=/{status}.html"
+            - "traefik.http.middlewares.proxy-header.headers.customRequestHeaders.X-Test=foo"
+            - "traefik.http.middlewares.proxy-header.headers.customrequestheaders.X-Script-Name=test"
+
             # CORS headers
-            - "traefik.http.middlewares.testheader.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,DELETE,POST"
-            - "traefik.http.middlewares.testheader.headers.accessControlAllowOriginList=https://${APP_HOST},https://localhost"
-            - "traefik.http.middlewares.testheader.headers.accesscontrolmaxage=100"
-            - "traefik.http.middlewares.testheader.headers.addvaryheader=true"
-            - "traefik.http.middlewares.testheader.headers.accessControlAllowCredentials=true"
-
- # # http with redirection
- #    - traefik.http.middlewares.redirect-middleware.redirectscheme.scheme=https
- #    - traefik.http.routers.web-router.entrypoints=web
- #    - traefik.http.routers.web-router.rule=Host(`your-domain.net`)
- #    - traefik.http.routers.web-router.middlewares=redirect-middleware
- #    # https
- #    - traefik.http.routers.websecure-router.entrypoints=websecure
- #    - traefik.http.routers.websecure-router.tls=true
- #    - traefik.http.routers.websecure-router.rule=Host(`your-domain.net`)
-
-            # traefik.http.routers.nginx.rule: Host(`nginx.bret.lol`)
-            # traefik.http.routers.nginx.entrypoints: websecure
-            # traefik.http.routers.nginx.tls: true
+            - "traefik.http.middlewares.proxy-header.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,DELETE,POST"
+            - "traefik.http.middlewares.proxy-header.headers.accessControlAllowOriginList=https://${APP_HOST},https://localhost"
+            - "traefik.http.middlewares.proxy-header.headers.accesscontrolmaxage=100"
+            - "traefik.http.middlewares.proxy-header.headers.addvaryheader=true"
 
         networks:
             hip_net:
@@ -70,120 +45,123 @@ services:
                 max-size: "200k"
                 max-file: "3"
 
-    web-server:
-        image: nginx:1-alpine
-        hostname: "${COMPOSE_PROJECT_NAME}-web-server"
-        container_name: "${COMPOSE_PROJECT_NAME}_web-server"
-        extra_hosts:
-            - "host.dev:${HOST_IP}"
-            - "host.docker.internal:172.16.200.1"
-        # ports:
-        #     - "8888:80"
-        volumes:
-            - "./data:${DATA_DIR}"
-            - "./etc/nginx/nginx.conf:/etc/nginx/nginx.conf"
-            - "./etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf"
-        labels:
-            - "traefik.enable=true" # make container visible for Traefik upstreaming
-            # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-web-server.rule=PathPrefix(`/web`)"
-            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-web-server.rule=Host(`hipster-web-server`)"
-            # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.scheme=https"
-            # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.permanent=true"
-        depends_on:
-            - php
-        networks:
-            hip_net:
-                ipv4_address: 172.16.200.110
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "200k"
-                max-file: "3"
+    # web-server:
+    #     image: nginx:1-alpine
+    #     hostname: "${COMPOSE_PROJECT_NAME}-web-server"
+    #     container_name: "${COMPOSE_PROJECT_NAME}_web-server"
+    #     extra_hosts:
+    #         - "host.dev:${HOST_IP}"
+    #         - "host.docker.internal:172.16.200.1"
+    #     # ports:
+    #     #     - "8888:80"
+    #     volumes:
+    #         - "./data:${DATA_DIR}"
+    #         - "./etc/nginx/nginx.conf:/etc/nginx/nginx.conf"
+    #         - "./etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf"
+    #     labels:
+    #         - "traefik.enable=true" # make container visible for Traefik upstreaming
+    #         # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-web-server.rule=PathPrefix(`/web`)"
+    #         - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-web-server.rule=Host(`hipster-web-server`)"
+    #         # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.scheme=https"
+    #         # - "traefik.http.middlewares.web-redirectscheme.redirectscheme.permanent=true"
+    #     depends_on:
+    #         - php
+    #     networks:
+    #         hip_net:
+    #             ipv4_address: 172.16.200.110
+    #     logging:
+    #         driver: "json-file"
+    #         options:
+    #             max-size: "200k"
+    #             max-file: "3"
 
-    php:
-        image: bravepickle/php:7.4-fpm-alpine-dev
-        hostname: "${COMPOSE_PROJECT_NAME}-php"
-        container_name: "${COMPOSE_PROJECT_NAME}_php"
-        extra_hosts:
-            - "host.dev:${HOST_IP}"
-            - "host.docker.internal:172.16.200.1"
-        volumes:
-            - "./data:${DATA_DIR}"
-        depends_on:
-            - db
-            - redis
-        networks:
-            hip_net:
-                ipv4_address: 172.16.200.120
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "200k"
-                max-file: "3"
+    # php:
+    #     image: bravepickle/php:7.4-fpm-alpine-dev
+    #     hostname: "${COMPOSE_PROJECT_NAME}-php"
+    #     container_name: "${COMPOSE_PROJECT_NAME}_php"
+    #     extra_hosts:
+    #         - "host.dev:${HOST_IP}"
+    #         - "host.docker.internal:172.16.200.1"
+    #     volumes:
+    #         - "./data:${DATA_DIR}"
+    #     depends_on:
+    #         - db
+    #         - redis
+    #     networks:
+    #         hip_net:
+    #             ipv4_address: 172.16.200.120
+    #     logging:
+    #         driver: "json-file"
+    #         options:
+    #             max-size: "200k"
+    #             max-file: "3"
 
-    php8:
-        image: bravepickle/php:8-fpm-alpine-dev
-        hostname: "${COMPOSE_PROJECT_NAME}-php8"
-        container_name: "${COMPOSE_PROJECT_NAME}_php8"
-        extra_hosts:
-            - "host.dev:${HOST_IP}"
-            - "host.docker.internal:172.16.200.1"
-        volumes:
-            - "./data:${DATA_DIR}"
-        depends_on:
-            - db
-            - redis
-        networks:
-            hip_net:
-                ipv4_address: 172.16.200.121
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "200k"
-                max-file: "3"
+    # php8:
+    #     image: bravepickle/php:8-fpm-alpine-dev
+    #     hostname: "${COMPOSE_PROJECT_NAME}-php8"
+    #     container_name: "${COMPOSE_PROJECT_NAME}_php8"
+    #     extra_hosts:
+    #         - "host.dev:${HOST_IP}"
+    #         - "host.docker.internal:172.16.200.1"
+    #     volumes:
+    #         - "./data:${DATA_DIR}"
+    #     depends_on:
+    #         - db
+    #         - redis
+    #     networks:
+    #         hip_net:
+    #             ipv4_address: 172.16.200.121
+    #     logging:
+    #         driver: "json-file"
+    #         options:
+    #             max-size: "200k"
+    #             max-file: "3"
 
-    db:
-        image: percona:5.7
-        hostname: "${COMPOSE_PROJECT_NAME}-db"
-        container_name: "${COMPOSE_PROJECT_NAME}_db"
-        environment:
-            MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS}"
-            MYSQL_DATABASE: "${DB_NAME}"
-            MYSQL_USER: "${DB_USER}"
-            MYSQL_PASSWORD: "${DB_PASS}"
-        networks:
-            hip_net:
-                ipv4_address: 172.16.200.130
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "200k"
-                max-file: "3"
+    # db:
+    #     image: percona:5.7
+    #     hostname: "${COMPOSE_PROJECT_NAME}-db"
+    #     container_name: "${COMPOSE_PROJECT_NAME}_db"
+    #     environment:
+    #         MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS}"
+    #         MYSQL_DATABASE: "${DB_NAME}"
+    #         MYSQL_USER: "${DB_USER}"
+    #         MYSQL_PASSWORD: "${DB_PASS}"
+    #     networks:
+    #         hip_net:
+    #             ipv4_address: 172.16.200.130
+    #     logging:
+    #         driver: "json-file"
+    #         options:
+    #             max-size: "200k"
+    #             max-file: "3"
 
-    redis:
-        image: redis:6-alpine
-        hostname: "${COMPOSE_PROJECT_NAME}-redis"
-        container_name: "${COMPOSE_PROJECT_NAME}_redis"
-        networks:
-            hip_net:
-                ipv4_address: 172.16.200.140
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "200k"
-                max-file: "3"
+    # redis:
+    #     image: redis:6-alpine
+    #     hostname: "${COMPOSE_PROJECT_NAME}-redis"
+    #     container_name: "${COMPOSE_PROJECT_NAME}_redis"
+    #     networks:
+    #         hip_net:
+    #             ipv4_address: 172.16.200.140
+    #     logging:
+    #         driver: "json-file"
+    #         options:
+    #             max-size: "200k"
+    #             max-file: "3"
 
-    proxy-test:
+    whoami:
         image: traefik/whoami
-        hostname: "${COMPOSE_PROJECT_NAME}-proxy-test"
-        container_name: "${COMPOSE_PROJECT_NAME}_proxy_test"
+        hostname: "${COMPOSE_PROJECT_NAME}-whoami"
+        container_name: "${COMPOSE_PROJECT_NAME}_whoami"
         extra_hosts:
             - "host.docker.internal:172.16.200.1"
         depends_on:
             - proxy
         labels:
             - "traefik.enable=true"
-            # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-proxy-test.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy-test`, `${COMPOSE_PROJECT_NAME}-proxy-test.docker.localhost`)"
+            # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-whoami.rule=Host(`${COMPOSE_PROJECT_NAME}-proxy-test`, `${COMPOSE_PROJECT_NAME}-proxy-test.docker.localhost`)"
+            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-whoami.rule=Host(`${COMPOSE_PROJECT_NAME}-whoami`, `${COMPOSE_PROJECT_NAME}-whoami.docker.localhost`, `${APP_HOST}`, `localhost`)"
+            - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-whoami.entryPoints=web,webSecured"
+            - "traefik.http.middlewares.whoami.headers.customResponseHeaders.X-Out=test"
         networks:
             hip_net:
                 ipv4_address: 172.16.200.200

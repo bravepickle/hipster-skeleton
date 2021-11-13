@@ -6,22 +6,14 @@ providers:
         # defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`, `hipster.localhost`)"
 
         # if enabled container for Traefik and rule not specified then this one will be used
-        defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`, `{{ trimPrefix `/` .Name }}`)"
+        defaultRule: "Host(`{{ .Name }}.docker.localhost`, `{{ .Name }}`)"
 
         # by default
         exposedByDefault: false
 
-        # SSL setup
-        # tls:
-        #     ca: /etc/ssl/certs/server.crt
-        #     key: /etc/ssl/private/server.key
-        #     insecureSkipVerify: true # for development mode only!
-
-    # file:
-    #     fileName: /etc/traefik/traefik.yaml
-    # directory: /etc/traefik/dynamic.conf/
-    #     watch: true
-    # better user directory watch due to filewatch issues
+    file:
+        directory: /etc/traefik/dynamic.conf/
+        watch: true
 
 # shows you a log msg if a newer image tag can be used
 global:
@@ -41,30 +33,30 @@ api:
 entryPoints:
     web:
         address: ':80'
-        http: # redirect all HTTP requests to HTTPS
-            redirections:
-                entryPoint:
-                to: webSecured
-                scheme: https
-                permanent: false
+        # http: # redirect all HTTP requests to HTTPS
+        #     redirections:
+        #         entryPoint:
+        #             to: webSecured
+        #             scheme: https
+        #             permanent: false
 
-            # middlewares: []
+        #     # middlewares: []
 
     webSecured:
         address: ':443'
 
-    # make possible to externally connect to MySQL through proxy without opening port and make load balancing, monitoring possible
-    mysql:
-        address: ':3306'
-
 
     # when 80 and 443 ports are busy or not allowed
-    other:
-        address: ':8888'
+    # other:
+    #     address: ':8888'
+
+    # make possible to externally connect to MySQL through proxy without opening port and make load balancing, monitoring possible
+    # mysql:
+    #     address: ':3306'
 
 # see https://doc.traefik.io/traefik/routing/overview/#transport-configuration
-# serversTransport:
-#     #insecureSkipVerify: true
+serversTransport:
+    insecureSkipVerify: true
 #     rootCAs:
 #         - /etc/ssl/certs/server.crt
 

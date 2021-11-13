@@ -1,6 +1,8 @@
 # Settings for dynamic config file provider
 # See https://doc.traefik.io/traefik/providers/file/
+# See https://medium.com/@clintcolding/use-your-own-certificates-with-traefik-a31d785a6441
 
+# Self-signed SSL certificates can be defined only using file provider
 tls:
     certificates:
         -   certFile: /etc/ssl/certs/server.crt
@@ -13,3 +15,28 @@ tls:
   # options:
     # default:
       # sniStrict: true
+
+
+# TODO: add middlewares here and then set labels
+
+# http:
+#     middlewares:
+#         app-prefix:
+#             addPrefix:
+#                 prefix: "/admin"
+        # https-redirect:
+        #   redirectScheme:
+        #     scheme: https
+        # default-headers:
+        #   headers:
+        #     frameDeny: true
+        #     sslRedirect: true
+        #     browserXssFilter: true
+        #     contentTypeNosniff: true
+        #     forceSTSHeader: true
+        #     stsIncludeSubdomains: true
+        #     stsPreload: true
+        #     stsSeconds: 15552000
+        #     customFrameOptionsValue: SAMEORIGIN
+        #     customRequestHeaders:
+        #       X-Forwarded-Proto: https
