@@ -58,3 +58,7 @@ openssl req -newkey rsa:2048 \
             -nodes \
             -out ${APP_HOST}.crt \
             -keyout ${APP_HOST}.key
+
+
+# Make PEM file just in case it is needed
+cat "${APP_HOST}.crt" "${APP_HOST}.key" | tee "${APP_HOST}.pem"
