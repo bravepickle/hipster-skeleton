@@ -31,6 +31,11 @@ curl -i 'localhost:8080/api/rawdata'
 echo ""
 
 echo ""
+echo "==============  Test if routing to whoami server works. Expecting to return 200 status code with headers info..."
+curl -i localhost:80/whoami/test
+echo ""
+
+echo ""
 echo "==============  Test if routing to web server works. Expecting to return 200 status code with headers info..."
-curl -i localhost:80/whoami-test
+curl -i localhost:80/server.php
 echo ""

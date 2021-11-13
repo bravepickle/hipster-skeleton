@@ -86,4 +86,4 @@ There are some shell scripts with useful utilities in folder `bin`. For developm
 
 ## TODO
 - [ ] figure out why docker hub allows only one architecture specified per tag and fix it
-- [ ] figure out why custom request and response headers are not displayed
+- [ ] figure out why custom request and response headers are not displayed. It seems that middleware not working at all for some reason

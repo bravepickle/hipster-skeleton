@@ -1,3 +1,4 @@
+<h1>Testing scripts handling</h1>
 <?php
 // Display server info
 

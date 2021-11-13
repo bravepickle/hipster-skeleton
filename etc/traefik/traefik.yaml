@@ -11,9 +11,9 @@ providers:
         # by default
         exposedByDefault: false
 
-    file:
-        directory: /etc/traefik/dynamic.conf/
-        watch: true
+    # file:
+    #     directory: /etc/traefik/dynamic.conf/
+    #     watch: true
 
 # shows you a log msg if a newer image tag can be used
 global:
