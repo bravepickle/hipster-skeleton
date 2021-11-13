@@ -24,10 +24,13 @@ services:
             - "./var/ssl-certs/${APP_HOST}.crt:/etc/ssl/certs/server.crt:ro"
             - "./var/ssl-certs/${APP_HOST}.key:/etc/ssl/private/server.key:ro"
         # labels:
-        #     # - "traefik.enable=true"
-        #     - "traefik.http.middlewares.proxy-header.headers.customRequestHeaders.X-Via=${COMPOSE_PROJECT_NAME}-proxy"
-        #     - "traefik.http.middlewares.proxy-header.headers.customRequestHeaders.X-Test=foo"
-        #     - "traefik.http.middlewares.proxy-header.headers.customrequestheaders.X-Script-Name=test"
+        #     - "traefik.enable=true"
+        #     - "traefik.http.middlewares.proxy-headers.headers.customRequestHeaders.X-Via=${COMPOSE_PROJECT_NAME}-proxy"
+
+        #     - "traefik.http.routers.priority=1000"
+        #     - "traefik.http.routers.proxy.rule=PathPrefix(`/`)"
+        #     - "traefik.http.routers.proxy.entryPoints=web"
+        #     - "traefik.http.routers.proxy.middlewares=proxy-headers@docker"
 
         #     # CORS headers
         #     - "traefik.http.middlewares.proxy-header.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,DELETE,POST"
@@ -174,21 +177,44 @@ services:
             - proxy
         labels:
             - "traefik.enable=true"
-            - "traefik.http.middlewares.whoami-prefix.addprefix.prefix=/foo"
+            - "traefik.http.middlewares.whoami-prefix.stripprefix.prefixes=/whoami"
+
             - "traefik.http.middlewares.whoami-headers.headers.customRequestHeaders.X-In=foo-in"
             - "traefik.http.middlewares.whoami-headers.headers.customResponseHeaders.X-Out=foo-out"
 
+            # - "traefik.http.middlewares.whoami-redirect.redirectscheme.scheme=https"
+            # - "traefik.http.middlewares.whoami-redirect.redirectscheme.permanent=false"
+
+            # CORS headers
+            - "traefik.http.middlewares.whoami-headers.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,DELETE,POST"
+            - "traefik.http.middlewares.whoami-headers.headers.accessControlAllowOriginList=https://${APP_HOST},https://localhost"
+            - "traefik.http.middlewares.whoami-headers.headers.accessControlMaxAge=100"
+            - "traefik.http.middlewares.whoami-headers.headers.addVaryHeader=true"
+            - "traefik.http.middlewares.whoami-headers.headers.accessControlExposeHeaders=*"
+            - "traefik.http.middlewares.whoami-headers.headers.allowedHosts=${APP_HOST},localhost"
+            - "traefik.http.middlewares.whoami-headers.headers.frameDeny=true"
+            # - "traefik.http.middlewares.whoami-headers.headers.sslRedirect=true"
+            - "traefik.http.middlewares.whoami-headers.headers.browserXssFilter=true"
+            - "traefik.http.middlewares.whoami-headers.headers.contentTypeNosniff=true"
+            - "traefik.http.middlewares.whoami-headers.headers.forceSTSHeader=true"
+            - "traefik.http.middlewares.whoami-headers.headers.stsIncludeSubdomains=true"
+            - "traefik.http.middlewares.whoami-headers.headers.stsPreload=true"
+            - "traefik.http.middlewares.whoami-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+            - "traefik.http.middlewares.whoami-headers.headers.isDevelopment=true"
+
+
             - "traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)"
-            - "traefik.http.routers.whoami.entryPoints=web"
+            - "traefik.http.routers.whoami.entryPoints=web,webSecured"
             - "traefik.http.routers.whoami.middlewares=whoami-prefix@docker,whoami-headers@docker"
+            # - "traefik.http.routers.whoami.middlewares=whoami-redirect@docker"
+            # - "traefik.http.routers.whoami.middlewares=whoami-prefix@docker,whoami-headers@docker,whoami-redirect@docker"
             # - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-whoami.entryPoints=web,webSecured"
 
-            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.headers.customResponseHeaders.X-Out=test"
-            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.addprefix.prefix=/foo"
-            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.headers.customResponseHeaders.X-Out=test"
-            # - "traefik.http.middlewares.${COMPOSE_PROJECT_NAME}-whoami.stripprefix.prefixes=/whoami"
             # - "traefik.http.middlewares.whoami=app-prefix@file"
             # - "traefik.http.routers.whoami-hipster.middlewares=app-prefix@file,default-headers@file"
+
+
+
 
         networks:
             hip_net:
