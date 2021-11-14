@@ -51,6 +51,6 @@ echo ""
 
 echo ""
 echo "==============  Test if routing to web server + PHP8 works. Expecting to return 302 and then 200 status code with headers info..."
-run_cmd curl -i -L --insecure https://localhost/server.php8
+run_cmd curl --http2 -i -L --insecure https://localhost/server.php8
 echo ""
 

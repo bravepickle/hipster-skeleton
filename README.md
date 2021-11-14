@@ -49,6 +49,15 @@ Current project's file structure is as follows
     
     ```
 
+## Links
+List of default links and interfaces available for the app.
+
+* Adminer: https://localhost:9090
+* Web server: https://localhost
+* Traefik dashboard: http://localhost:8080/dashboard/
+* MySQL/Percona DB connection: localhost:3306
+* WhoAmI sandbox environment for testing Traefik routing: https://localhost/whoami/
+
 ## Dependencies used
 * [Ansible](https://docs.ansible.com/ansible/latest/) automation tool
 * [Docker](https://docs.docker.com)
@@ -59,6 +68,7 @@ Current project's file structure is as follows
     * PHP-FPM CGI
     * [Traefik](https://doc.traefik.io/traefik/) reverse proxy
     * Traefik [WhoAmI](https://github.com/traefik/whoami) test server
+    * [Adminer](https://www.adminer.org/) DB client user interface
 * [Vagrant](https://www.vagrantup.com/)
 
 ## Installing self-signed SSL certificates
@@ -72,6 +82,8 @@ Current project's file structure is as follows
 There are some shell scripts with useful utilities in folder `bin`. For development purposes only!
 
 * `make_self_signed_cert.sh` - make self-signed SSL certificate and private key and put it to `var/ssl-certs` folder
+* `test_proxy.sh` - run a few CURL console commands to test server environment setup
+* `build_docker_containers_multi_arch.sh` - build custom containers for multiple CPU architectures and push to the registry. Note: after copying contents should be updated to push to the right registry and change container builds
 
 
 ## Useful info

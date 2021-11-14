@@ -44,7 +44,7 @@ http:
                 stsIncludeSubdomains: true
                 stsPreload: true
                 # stsSeconds: 15552000
-                stsSeconds: 52000 # for development only when isDevelopment flag is disabled
+                stsSeconds: 5000 # for development only when isDevelopment flag is disabled
                 customFrameOptionsValue: SAMEORIGIN
                 customResponseHeaders:
                     X-Out: dolor
