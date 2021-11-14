@@ -83,7 +83,11 @@ There are some shell scripts with useful utilities in folder `bin`. For developm
 * Build custom images for multiple platform using [Buildx](https://docs.docker.com/buildx/working-with-buildx/). Read also [multi-platform usage](https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md) instructions (consider using [docker-container](https://github.com/docker/buildx/blob/master/docs/reference/buildx_create.md#driver) driver instead of default `docker` one)
 * [Self-signed SSL certificates docs](https://devcenter.heroku.com/articles/ssl-certificate-self)
 
+## Troubleshooting
+* Remember to generate SSL certificates if they are used and check if they are installed-configured properly before starting
+* Think of adding used application host name to `hosts` file on your host machine. Should be the same as the one defined in `.env` file under `APP_HOST` environment variable
+* If browser does not show button to bypass insecure SSL connection (e.g. in Chrome under MacOS error "NET::ERR_CERT_INVALID") then one can either add to trusted certificates list given certificate or type "thisisunsafe" (in Google Chrome. See [this link](https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12) to learn more)
 
 ## TODO
-- [ ] figure out why docker hub allows only one architecture specified per tag and fix it
-- [ ] figure out why custom request and response headers are not displayed. It seems that middleware not working at all for some reason
+- [x] figure out why docker hub allows only one architecture specified per tag and fix it
+- [x] figure out why custom request and response headers are not displayed. It seems that middleware not working at all for some reason

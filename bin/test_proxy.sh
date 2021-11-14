@@ -14,6 +14,15 @@ set -a
 source $BASE_DIR/.env
 set +a
 
+CL_GREEN=`tput setaf 2`
+CL_RESET=`tput sgr0`
+
+run_cmd() {
+    echo -e "${CL_GREEN}=> ${@}${CL_RESET}"
+    echo ""
+    $@
+}
+
 echo BASE_DIR $BASE_DIR
 
 set -e
@@ -22,25 +31,26 @@ cd $BASE_DIR
 
 echo ""
 echo "==============  Test if Traefik Dashboard works. Expecting to return 200 status code..."
-curl -I 'localhost:8080/dashboard/'
+run_cmd curl -I 'localhost:8080/dashboard/'
 echo ""
 
 echo ""
 echo "==============  Test if Traefik API is enabled and works. Expecting to return 200 status code and JSON code..."
-curl -i 'localhost:8080/api/rawdata'
+run_cmd curl -i 'localhost:8080/api/rawdata'
 echo ""
 
 echo ""
 echo "==============  Test if routing to whoami server works. Expecting to return 200 status code with headers info..."
-curl -i localhost:80/whoami/test
+run_cmd curl -i -L --insecure http://localhost/whoami/test
 echo ""
 
 echo ""
 echo "==============  Test if routing to web server + PHP works. Expecting to return 200 status code with headers info..."
-curl -i localhost:80/server.php
+run_cmd curl -i -L --insecure http://localhost/server.php
 echo ""
 
 echo ""
 echo "==============  Test if routing to web server + PHP8 works. Expecting to return 200 status code with headers info..."
-curl -i localhost:80/server.php8
+run_cmd curl -i -L --insecure https://localhost/server.php8
 echo ""
+
