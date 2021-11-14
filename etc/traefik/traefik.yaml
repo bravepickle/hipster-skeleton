@@ -12,8 +12,9 @@ providers:
         exposedByDefault: false
 
     file:
-        directory: /etc/traefik/dynamic.conf/
-        watch: true
+        filename: /etc/traefik/dynamic.conf.yaml
+        # directory: /etc/traefik/dynamic.conf/
+        # watch: true
 
 # shows you a log msg if a newer image tag can be used
 # global:
@@ -57,8 +58,3 @@ entryPoints:
 #     insecureSkipVerify: true
 #     rootCAs:
 #         - /etc/ssl/certs/server.crt
-
-# tls:
-#     certificates:
-#         -   certFile: /etc/ssl/certs/server.crt
-#             keyFile: /etc/ssl/private/server.key

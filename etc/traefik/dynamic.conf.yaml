@@ -1,0 +1,56 @@
+# Settings for dynamic config file provider
+# See https://doc.traefik.io/traefik/providers/file/
+# See https://medium.com/@clintcolding/use-your-own-certificates-with-traefik-a31d785a6441
+
+# Self-signed SSL certificates can be defined only using file provider
+tls:
+    certificates:
+        -   certFile: /etc/ssl/certs/server.crt
+            keyFile: /etc/ssl/private/server.key
+
+
+    stores:
+        default:
+            defaultCertificate:
+                certFile: /etc/ssl/certs/server.crt
+                keyFile: /etc/ssl/private/server.key
+
+    options:
+        default:
+            alpnProtocols:
+                - http/1.1
+                - h2
+
+# When testing certs, enable this so traefik doesn't use
+# it's own self signed. By default if it can't find a matching
+# cert, it'll just create it's own which will cause cert warnings
+# in browser
+  # options:
+    # default:
+      # sniStrict: true
+
+http:
+    # middlewares without ENV variables and the ones seldomly updated can be put here
+    middlewares:
+        whoami-prefix:
+            stripPrefix:
+                prefixes: /whoami
+        default-headers:
+            headers:
+                frameDeny: true
+                browserXssFilter: true
+                contentTypeNosniff: true
+                forceSTSHeader: true
+                stsIncludeSubdomains: true
+                stsPreload: true
+                stsSeconds: 15552000
+                customFrameOptionsValue: SAMEORIGIN
+                customResponseHeaders:
+                    X-Out: dolor
+                customRequestHeaders:
+                    X-In: lorem
+                    X-In: ipsum
+                addVaryHeader: true
+                isDevelopment: true
+
+
