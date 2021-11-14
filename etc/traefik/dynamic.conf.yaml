@@ -43,7 +43,8 @@ http:
                 forceSTSHeader: true
                 stsIncludeSubdomains: true
                 stsPreload: true
-                stsSeconds: 15552000
+                # stsSeconds: 15552000
+                stsSeconds: 52000 # for development only when isDevelopment flag is disabled
                 customFrameOptionsValue: SAMEORIGIN
                 customResponseHeaders:
                     X-Out: dolor

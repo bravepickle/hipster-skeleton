@@ -50,11 +50,13 @@ services:
             - "traefik.enable=true"
 
             # Middleware CORS headers - more dynamic ones than the rest
-            - "traefik.http.middlewares.web-cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,DELETE,POST"
+            - "traefik.http.middlewares.web-cors.headers.accessControlAllowMethods=GET,OPTIONS,PUT,DELETE,POST"
             - "traefik.http.middlewares.web-cors.headers.accessControlAllowOriginList=https://${APP_HOST},https://localhost"
             - "traefik.http.middlewares.web-cors.headers.accessControlMaxAge=100"
-            - "traefik.http.middlewares.web-cors.headers.addVaryHeader=true"
+            - "traefik.http.middlewares.web-cors.headers.accessControlAllowCredentials=true"
             - "traefik.http.middlewares.web-cors.headers.accessControlExposeHeaders=*"
+            - "traefik.http.middlewares.web-cors.headers.accessControlAllowHeaders=*"
+            - "traefik.http.middlewares.web-cors.headers.addVaryHeader=true"
             - "traefik.http.middlewares.web-cors.headers.allowedHosts=${APP_HOST},localhost"
 
             # Routers
