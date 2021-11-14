@@ -19,7 +19,7 @@ providers:
 # global:
 #   checkNewVersion: true
 
-# log default is ERROR, but WARN is more helpful
+# log default is ERROR
 log:
   # level: WARN
   level: INFO
@@ -33,14 +33,12 @@ api:
 entryPoints:
     web:
         address: ':80'
-        # http: # redirect all HTTP requests to HTTPS
-        #     redirections:
-        #         entryPoint:
-        #             to: webSecured
-        #             scheme: https
-        #             permanent: false
-
-        #     # middlewares: []
+        http: # redirect all HTTP requests to HTTPS
+            redirections:
+                entryPoint:
+                    to: webSecured
+                    scheme: https
+                    permanent: false
 
     webSecured:
         address: ':443'
@@ -55,12 +53,12 @@ entryPoints:
     #     address: ':3306'
 
 # see https://doc.traefik.io/traefik/routing/overview/#transport-configuration
-serversTransport:
-    insecureSkipVerify: true
+# serversTransport:
+#     insecureSkipVerify: true
 #     rootCAs:
 #         - /etc/ssl/certs/server.crt
 
-tls:
-    certificates:
-        -   certFile: /etc/ssl/certs/server.crt
-            keyFile: /etc/ssl/private/server.key
+# tls:
+#     certificates:
+#         -   certFile: /etc/ssl/certs/server.crt
+#             keyFile: /etc/ssl/private/server.key

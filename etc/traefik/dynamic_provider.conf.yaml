@@ -8,6 +8,19 @@ tls:
         -   certFile: /etc/ssl/certs/server.crt
             keyFile: /etc/ssl/private/server.key
 
+
+    stores:
+        default:
+            defaultCertificate:
+                certFile: /etc/ssl/certs/server.crt
+                keyFile: /etc/ssl/private/server.key
+
+    options:
+        default:
+            alpnProtocols:
+                - http/1.1
+                - h2
+
 # When testing certs, enable this so traefik doesn't use
 # it's own self signed. By default if it can't find a matching
 # cert, it'll just create it's own which will cause cert warnings
@@ -19,38 +32,38 @@ tls:
 
 # TODO: add middlewares here and then set labels
 
-http:
-    middlewares:
-        app-prefix:
-            addPrefix:
-                prefix: "/admin"
-        # https-redirect:
-        #   redirectScheme:
-        #     scheme: https
-        default-headers:
-            headers:
-                frameDeny: true
-                sslRedirect: true
-                browserXssFilter: true
-                contentTypeNosniff: true
-                forceSTSHeader: true
-                stsIncludeSubdomains: true
-                stsPreload: true
-                stsSeconds: 15552000
-                customFrameOptionsValue: SAMEORIGIN
-                customResponseHeaders:
-                    X-Boo: dolor
-                customRequestHeaders:
-                    # X-Forwarded-Proto: https
-                    X-App: lorem
-                    X-Neo: ipsum
-                accessControlAllowMethods: "GET,OPTIONS,PUT,DELETE,POST"
-                accessControlAllowOriginList: "https://hipster.localhost,https://hipster.docker.localhost,https://localhost"
-                accessControlMaxAge: 100
-                addVaryHeader: true
-                isDevelopment: true
-                allowedHosts:
-                    - hipster.localhost
-                    - hipster.docker.localhost
-                    - localhost
+# http:
+#     middlewares:
+#         app-prefix:
+#             addPrefix:
+#                 prefix: "/admin"
+#         # https-redirect:
+#         #   redirectScheme:
+#         #     scheme: https
+#         default-headers:
+#             headers:
+#                 frameDeny: true
+#                 sslRedirect: true
+#                 browserXssFilter: true
+#                 contentTypeNosniff: true
+#                 forceSTSHeader: true
+#                 stsIncludeSubdomains: true
+#                 stsPreload: true
+#                 stsSeconds: 15552000
+#                 customFrameOptionsValue: SAMEORIGIN
+#                 customResponseHeaders:
+#                     X-Boo: dolor
+#                 customRequestHeaders:
+#                     # X-Forwarded-Proto: https
+#                     X-App: lorem
+#                     X-Neo: ipsum
+#                 accessControlAllowMethods: "GET,OPTIONS,PUT,DELETE,POST"
+#                 accessControlAllowOriginList: "https://hipster.localhost,https://hipster.docker.localhost,https://localhost"
+#                 accessControlMaxAge: 100
+#                 addVaryHeader: true
+#                 isDevelopment: true
+#                 allowedHosts:
+#                     - hipster.localhost
+#                     - hipster.docker.localhost
+#                     - localhost
 
