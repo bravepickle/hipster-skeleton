@@ -2,7 +2,7 @@
 Skeleton for development of web application in local and remote setup with nifty approach
 
 
-## File Hiearchy Structure
+## File Hierarchy Structure
 Current project's file structure is as follows
 
 * *bin* - scripts to run for setting up application
@@ -59,7 +59,6 @@ List of default links and interfaces available for the app.
 * WhoAmI sandbox environment for testing Traefik routing: https://localhost/whoami/
 
 ## Dependencies used
-* [Ansible](https://docs.ansible.com/ansible/latest/) automation tool
 * [Docker](https://docs.docker.com)
 * [Docker Compose](https://docs.docker.com/compose)
 * Docker containers
